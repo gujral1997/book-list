@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gujral1997/book-list/models"
 	bookrepository "github.com/gujral1997/book-list/repository/book"
+	bookvalidations "github.com/gujral1997/book-list/validations"
 )
 
 type Controller struct{}
@@ -39,7 +40,13 @@ func (c Controller) GetBook(db *sql.DB) http.HandlerFunc {
 func (c Controller) CreateBook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
+		createBookValidation := bookvalidations.BookValidations{}
+		err, isValid := createBookValidation.CreateBookValidation(r, book)
 		json.NewDecoder(r.Body).Decode(&book)
+		if !isValid {
+			json.NewEncoder(w).Encode(err)
+			return
+		}
 		bookRepo := bookrepository.BookRepository{}
 		bookID := bookRepo.CreateBook(db, book)
 		json.NewEncoder(w).Encode(bookID)
@@ -49,6 +56,12 @@ func (c Controller) CreateBook(db *sql.DB) http.HandlerFunc {
 func (c Controller) UpdateBook(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var book models.Book
+		createBookValidation := bookvalidations.BookValidations{}
+		err, isValid := createBookValidation.UpdateBookValidation(r, book)
+		if !isValid {
+			json.NewEncoder(w).Encode(err)
+			return
+		}
 		json.NewDecoder(r.Body).Decode(&book)
 		bookRepo := bookrepository.BookRepository{}
 		rowsUpdated := bookRepo.UpdateBooks(db, book)
