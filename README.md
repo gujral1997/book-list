@@ -1,6 +1,6 @@
 ## BOOK-LIST
 
-Simple CRUD APIS for Books using POSTGRES SQL
+Simple CRUD APIS for Books using POSTGRES SQL and Gorilla Mux
 
 ## Installation
 
